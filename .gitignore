@@ -1,0 +1,24 @@
+# Created by .ignore support plugin (hsz.mobi)
+# Eclipse
+*.project
+*.settings/
+*.classpath
+
+# IntelliJ
+.idea
+*.iml
+.idea/
+*/.project
+*/.settings
+*/.classpath
+.project
+.settings
+.classpath
+target/
+
+# Vim
+.*.swp
+
+# Maven
+*/target/
+*~

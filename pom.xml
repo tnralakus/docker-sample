@@ -1,0 +1,103 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.alakus.dockersample</groupId>
+    <artifactId>docker-sample</artifactId>
+    <packaging>jar</packaging>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <description>Docker Sample image</description>
+    <name>Docker Sample</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
+        <maven.spotify.docker.plugin.version>0.4.0</maven.spotify.docker.plugin.version>
+        <docker.username>talakus</docker.username>
+	<docker.password>02112001</docker.password>
+	<docker.email>tnralakus@gmail.com</docker.email>
+        <docker.final.name>talakus/docker-sample:${project.version}</docker.final.name>
+        <docker.latest.name>talakus/docker-sample:latest</docker.latest.name>
+    </properties>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <executions>
+                    <execution>
+                        <id>push_to_repo</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <environmentVariables>
+                                <TARGET_DIR>${project.build.directory}</TARGET_DIR>
+                                <image>${docker.final.name}</image>
+				<latesttag>${docker.latest.name}</latesttag>
+				<username>${docker.username}</username>
+				<password>${docker.password}</password>
+				<email>${docker.email}</email>
+                            </environmentVariables>
+                            <executable>${basedir}/scripts/push_to_repo.sh</executable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> 
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${maven.spotify.docker.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>build-docker-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <tagInfoFile>${project.build.directory}/docker_image_info.json</tagInfoFile>
+                            <imageName>${project.artifactId}</imageName>
+                            <dockerDirectory>docker</dockerDirectory>
+                            <pushImage>false</pushImage>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>tag-docker-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <tagInfoFile>${project.build.directory}/docker_image_info.json</tagInfoFile>
+                            <image>${project.artifactId}</image>
+                            <newName>${docker.final.name}</newName>
+                        </configuration>
+                    </execution>
+		    <!--<execution>
+                        <id>tag-latest-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <tagInfoFile>${project.build.directory}/docker_latest_info.json</tagInfoFile>
+                            <image>${project.artifactId}</image>
+                            <newName>${docker.latest.name}</newName>
+                        </configuration>
+                    </execution>-->
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
